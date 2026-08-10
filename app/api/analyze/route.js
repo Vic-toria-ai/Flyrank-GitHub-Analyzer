@@ -1,7 +1,8 @@
 import { streamText } from "ai";
 import { google } from "@ai-sdk/google";
 
-// this runs on the server, not in the browser
+// this runs on the server, not in the browser.
+// it is a POST endpoint that takes a GitHub username and an array of repositories, and returns an analysis of the developer's activity in a structured JSON format.
 
 export async function POST(request) {
   const body = await request.json();
