@@ -15,7 +15,7 @@ export default async function ProfilePage({ params }) {
       <h1>{user.name}</h1>
       <p>{user.bio}</p>
       {/* It passes the user and repository information to the AiSummaryCard component to display the summary in a card format. */}
-      <AiSummaryCard user={user} repos={repos} />
+      <AiSummaryCard username={username} repos={repos} />
     </div>
   );
 }
