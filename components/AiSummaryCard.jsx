@@ -7,7 +7,9 @@ import { DefaultChatTransport } from "ai";
 
 export default function AiSummaryCard({ username, repos }) {
   // useChat is a hook that provides the messages, sendMessage function, status of the chat (streaming or not), and a stop function to halt the streaming. It manages the state of the chat and allows for sending messages to the AI and receiving responses.
-  const { messages, sendMessage, status, stop, setMessages } = useChat({
+
+  // error becomes truthy if a request fails; regenerate() retries just the last message, not the whole conversation.
+  const { messages, sendMessage, status, stop, setMessages, error, regenerate } = useChat({
     transport: new DefaultChatTransport({ api: "/api/analyze" }),
   });
   function handleAnalyze() {
@@ -29,7 +31,8 @@ export default function AiSummaryCard({ username, repos }) {
     });
   }
 
-  const loading = status === "streaming";
+  // "submitted" covers the brief moment after clicking but before streaming actually starts, so the UI doesn't flicker.
+  const loading = status === "streaming" || status === "submitted";
   const latestMessage = messages.filter((m) => m.role === "assistant").pop();
 
   return (
@@ -52,8 +55,38 @@ export default function AiSummaryCard({ username, repos }) {
         )}
       </div>
 
-      {loading && !latestMessage && (
-        <p className="text-zinc-400 text-sm">Thinking…</p>
+      {/* designed error state with a working retry button. regenerate() only retries
+          the failed message, not the whole conversation from scratch. */}
+      {error && (
+        <div className="mb-3 flex items-center justify-between gap-3 rounded-md border border-red-900 bg-red-950/40 px-3 py-2 text-sm text-red-300">
+          <span>Something went wrong generating this summary.</span>
+          <button
+            onClick={() => regenerate()}
+            className="shrink-0 rounded border border-red-800 px-2 py-1 text-xs text-red-200 hover:bg-red-900/40"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {loading && !latestMessage && !error && (
+    <div className="animate-pulse space-y-3">
+      <div className="rounded-md border border-zinc-800 bg-zinc-950 p-4">
+        <div className="h-8 w-16 rounded bg-zinc-800 mb-2" />
+        <div className="h-3 w-48 rounded bg-zinc-800" />
+      </div>
+      <div className="h-3 w-full rounded bg-zinc-800" />
+      <div className="h-3 w-5/6 rounded bg-zinc-800" />
+      <div className="h-3 w-4/6 rounded bg-zinc-800" />
+    </div>
+)}
+
+      {/* first-run empty state — nothing analyzed yet, no error, not loading.
+          gives the user a clear next action instead of a blank card. */}
+      {!loading && !latestMessage && !error && (
+        <p className="text-zinc-500 text-sm">
+          Click "Analyze Profile" to get an AI-generated summary of this developer's strengths and activity.
+        </p>
       )}
 
       {/* each message can have multiple "parts" — plain text chunks, or tool-call events.
