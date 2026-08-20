@@ -11,6 +11,8 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './setupTests.js',
     globals: true,
+    pool: 'threads',
+    exclude: ['tests/**', 'node_modules/**'],
   },
   resolve: {
     alias: {
