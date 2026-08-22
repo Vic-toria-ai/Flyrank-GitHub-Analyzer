@@ -3,7 +3,7 @@
 ## Before
 
 Lighthouse (mobile, live deployed URL: https://flyrank-git-hub-analyzer.vercel.app)
-![before image](<lighthouse before.png>)
+c:\Users\USER\Downloads\lighthouse-test.jpeg
 - **Performance: 85**
 - **Accessibility: 95**
 - **Best Practices: 100**
@@ -30,8 +30,8 @@ white text) failed color contrast requirements for normal-sized text.
   fully completable without a mouse.
 
 ## After
-![performance-after](performance-after.png)
-![accessibility-after](accessibility-after.png)
+c:\Users\USER\Downloads\performance-after.jpeg!
+c:\Users\USER\Downloads\accessibility-after.jpeg
 - **Performance: 87**
 - **Accessibility: 100**
 - **Best Practices: 100**
