@@ -71,5 +71,30 @@ change and "Retry" label still provide full feedback without motion.
 The button auto-returns to idle after 1.8s, long enough to read the
 result but not so long it feels stuck.
 
+## 3D Activity Orb
+
+A small interactive Three.js/React Three Fiber scene at `/3d-orb-demo`,
+built from primitive geometry (no external 3D model files, so nothing
+to compress or lazy-load beyond the library code itself). Click the
+orb to cycle through four colors, hover to see it scale up and switch
+to wireframe, or drag anywhere on the canvas to orbit the camera.
+
+**Loading:** the entire Three.js/R3F bundle is dynamically imported via
+`next/dynamic` with `ssr: false`, so it's only fetched when this page
+is actually visited, not bundled into the app's main load. Measured
+Largest Contentful Paint on this page was 0.51s (Chrome DevTools,
+flagged "good"), and the rotation renders smoothly with no visible
+frame drops.
+
+**Fallback:** if the browser reports `prefers-reduced-motion`, the
+canvas is skipped entirely in favor of a static colored circle, so
+motion-sensitive users still see something meaningful without any
+animation.
+
+**With more time:** I'd add a real GLB model (DRACO-compressed) as a
+second, more visually rich demo, and wire the orb's color/pulse speed
+to a real signal from the capstone (e.g. a developer's actual activity
+score) rather than a manual click.
+
 ## About This Repo
 This repo documents an AI-assisted development process as part of a frontend engineering internship track. See `CLAUDE.md` for AI assistant conventions used in this project.

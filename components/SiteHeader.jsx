@@ -1,9 +1,9 @@
-import Link from "next/link"
-import TokenWidget from "./TokenWidget"
+import Link from "next/link";
+import TokenWidget from "./TokenWidget";
 
 export default function SiteHeader() {
   return (
-    <header className="border-b border-zinc-800 bg-zinc-950 px-4 py-3 flex items-center justify-between">
+    <header className="border-b border-zinc-800 bg-zinc-950 px-4 py-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <nav className="flex items-center gap-4">
         <Link href="/" className="text-sm font-semibold text-zinc-100">
           GitHub Analyzer
@@ -16,4 +16,3 @@ export default function SiteHeader() {
     </header>
   );
 }
-
