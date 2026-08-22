@@ -9,7 +9,15 @@ export default function AiSummaryCard({ username, repos }) {
   // useChat is a hook that provides the messages, sendMessage function, status of the chat (streaming or not), and a stop function to halt the streaming. It manages the state of the chat and allows for sending messages to the AI and receiving responses.
 
   // error becomes truthy if a request fails; regenerate() retries just the last message, not the whole conversation.
-  const { messages, sendMessage, status, stop, setMessages, error, regenerate } = useChat({
+  const {
+    messages,
+    sendMessage,
+    status,
+    stop,
+    setMessages,
+    error,
+    regenerate,
+  } = useChat({
     transport: new DefaultChatTransport({ api: "/api/analyze" }),
   });
   function handleAnalyze() {
@@ -41,7 +49,7 @@ export default function AiSummaryCard({ username, repos }) {
         <button
           onClick={handleAnalyze}
           disabled={loading}
-          className="px-3 py-1.5 rounded bg-violet-500 text-white text-sm disabled:opacity-50"
+          className="px-3 py-1.5 rounded bg-violet-600 text-white text-sm disabled:opacity-50"
         >
           {loading ? "Analyzing..." : "Analyze Profile"}
         </button>
@@ -70,22 +78,23 @@ export default function AiSummaryCard({ username, repos }) {
       )}
 
       {loading && !latestMessage && !error && (
-    <div className="animate-pulse space-y-3">
-      <div className="rounded-md border border-zinc-800 bg-zinc-950 p-4">
-        <div className="h-8 w-16 rounded bg-zinc-800 mb-2" />
-        <div className="h-3 w-48 rounded bg-zinc-800" />
-      </div>
-      <div className="h-3 w-full rounded bg-zinc-800" />
-      <div className="h-3 w-5/6 rounded bg-zinc-800" />
-      <div className="h-3 w-4/6 rounded bg-zinc-800" />
-    </div>
-)}
+        <div className="animate-pulse space-y-3">
+          <div className="rounded-md border border-zinc-800 bg-zinc-950 p-4">
+            <div className="h-8 w-16 rounded bg-zinc-800 mb-2" />
+            <div className="h-3 w-48 rounded bg-zinc-800" />
+          </div>
+          <div className="h-3 w-full rounded bg-zinc-800" />
+          <div className="h-3 w-5/6 rounded bg-zinc-800" />
+          <div className="h-3 w-4/6 rounded bg-zinc-800" />
+        </div>
+      )}
 
       {/* first-run empty state — nothing analyzed yet, no error, not loading.
           gives the user a clear next action instead of a blank card. */}
       {!loading && !latestMessage && !error && (
         <p className="text-zinc-500 text-sm">
-          Click "Analyze Profile" to get an AI-generated summary of this developer's strengths and activity.
+          Click "Analyze Profile" to get an AI-generated summary of this
+          developer's strengths and activity.
         </p>
       )}
 
@@ -102,9 +111,8 @@ export default function AiSummaryCard({ username, repos }) {
             </p>
           );
         }
-        // this is the part of the message that contains the output from the scoreProfile tool. 
+        // this is the part of the message that contains the output from the scoreProfile tool.
         if (part.type === "tool-scoreProfile") {
-
           if (part.state === "input-streaming") {
             // part.state is to show the current state of the tool call. It can be "input-streaming", "input-available", "output-available", or "output-error". Each state is rendered differently to provide feedback to the user about the progress of the analysis.
             return (
@@ -119,14 +127,15 @@ export default function AiSummaryCard({ username, repos }) {
           }
 
           if (part.state === "input-available") {
-            // input-available state indicates that the input data for the scoreProfile tool is ready, and the AI is now calculating the score based on the provided repository data. 
+            // input-available state indicates that the input data for the scoreProfile tool is ready, and the AI is now calculating the score based on the provided repository data.
             return (
               <div
                 key={i}
                 className="mb-3 flex items-center gap-2 rounded-md border border-violet-900 bg-violet-950/40 px-3 py-2 text-xs text-violet-300"
               >
                 <span className="h-1.5 w-1.5 animate-spin rounded-full border border-violet-300 border-t-transparent" />
-                Calculating activity score from {part.input?.repos?.length ?? 0} repos…
+                Calculating activity score from {part.input?.repos?.length ?? 0}{" "}
+                repos…
               </div>
             );
           }
@@ -143,7 +152,9 @@ export default function AiSummaryCard({ username, repos }) {
                   <span className="text-3xl font-mono font-bold text-violet-400">
                     {score}
                   </span>
-                  <span className="text-xs text-zinc-500">/ 100 activity score</span>
+                  <span className="text-xs text-zinc-500">
+                    / 100 activity score
+                  </span>
                 </div>
                 <p className="mt-2 text-sm text-zinc-400">{reasoning}</p>
               </div>

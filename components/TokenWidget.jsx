@@ -46,49 +46,56 @@ export default function TokenWidget() {
     setError(null);
     setSaved(false);
   }
-return (
-  <form onSubmit={handleSubmit} noValidate className="relative flex items-center gap-1.5 flex-nowrap">
-    <label htmlFor="github-token" className="text-xs text-zinc-400 whitespace-nowrap">
-      GitHub Token
-    </label>
-
-    <input
-      id="github-token"
-      name="github-token"
-      type="password"
-      value={token}
-      onChange={(e) => setToken(e.target.value)}
-      aria-describedby={error ? "github-token-error" : undefined}
-      aria-invalid={error ? "true" : "false"}
-      placeholder={saved ? "Saved" : "ghp_..."}
-      autoComplete="off"
-      className="min-w-0 flex-1 sm:flex-none rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs text-zinc-100 sm:w-40"
-    />
-
-    <button
-      type="submit"
-      className="shrink-0 rounded bg-violet-500 px-2 py-1 text-xs text-white hover:bg-violet-400"
+  return (
+    <form
+      onSubmit={handleSubmit}
+      noValidate
+      className="relative flex items-center gap-1.5 flex-nowrap"
     >
-      Save
-    </button>
-    {saved && (
+      <label
+        htmlFor="github-token"
+        className="text-xs text-zinc-400 whitespace-nowrap"
+      >
+        GitHub Token
+      </label>
+
+      <input
+        id="github-token"
+        name="github-token"
+        type="password"
+        value={token}
+        onChange={(e) => setToken(e.target.value)}
+        aria-describedby={error ? "github-token-error" : undefined}
+        aria-invalid={error ? "true" : "false"}
+        placeholder={saved ? "Saved" : "ghp_..."}
+        autoComplete="off"
+        className="min-w-0 flex-1 sm:flex-none rounded border border-zinc-700 bg-zinc-900 px-2 py-1 text-xs text-zinc-100 sm:w-40"
+      />
+
       <button
-        type="button"
-        onClick={handleClear}
-        className="shrink-0 rounded border border-zinc-700 px-2 py-1 text-xs text-zinc-400 hover:text-zinc-200"
+        type="submit"
+        className="shrink-0 rounded bg-violet-600 px-2 py-1 text-xs text-white hover:bg-violet-500"
       >
-        Clear
+        Save
       </button>
-    )}
-    {error && (
-      <span
-        id="github-token-error"
-        role="alert"
-        className="absolute top-full left-0 mt-1 pb-2 whitespace-nowrap text-xs text-red-400"
-      >
-        {error}
-      </span>
-    )}
-  </form>
-);
+      {saved && (
+        <button
+          type="button"
+          onClick={handleClear}
+          className="shrink-0 rounded border border-zinc-700 px-2 py-1 text-xs text-zinc-400 hover:text-zinc-200"
+        >
+          Clear
+        </button>
+      )}
+      {error && (
+        <span
+          id="github-token-error"
+          role="alert"
+          className="absolute top-full left-0 mt-1 pb-2 whitespace-nowrap text-xs text-red-400"
+        >
+          {error}
+        </span>
+      )}
+    </form>
+  );
 }

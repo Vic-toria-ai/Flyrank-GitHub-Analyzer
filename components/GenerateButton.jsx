@@ -9,9 +9,12 @@ function fakeAsyncAction(forceOutcome) {
     // simulate a random delay between 1 and 2 seconds. it is a Promise that either resolve()s (success) or reject()s (failure) after a delay.
     const delay = 1000 + Math.random() * 1000;
     setTimeout(() => {
-      const willSucceed = forceOutcome === "success" ? true
-        : forceOutcome === "error" ? false
-        : Math.random() > 0.2;
+      const willSucceed =
+        forceOutcome === "success"
+          ? true
+          : forceOutcome === "error"
+            ? false
+            : Math.random() > 0.2;
       willSucceed ? resolve() : reject();
     }, delay);
   });
@@ -59,7 +62,7 @@ export default function GenerateButton() {
           disabled:cursor-not-allowed
           ${isError ? "bg-red-600 motion-safe:animate-[shake_320ms_ease-in-out]" : ""}
           ${isSuccess ? "bg-emerald-600" : ""}
-          ${!isError && !isSuccess ? "bg-violet-500 hover:bg-violet-400 active:scale-[0.97]" : ""}
+          ${!isError && !isSuccess ? "bg-violet-600 hover:bg-violet-500 active:scale-[0.97]" : ""}
         `}
       >
         {/* icon area — cross-fades and slides between spinner / check / idle icon */}
@@ -69,20 +72,44 @@ export default function GenerateButton() {
             viewBox="0 0 24 24"
             fill="none"
           >
-            <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="3" strokeOpacity="0.25" />
-            <path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+            <circle
+              cx="12"
+              cy="12"
+              r="9"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeOpacity="0.25"
+            />
+            <path
+              d="M21 12a9 9 0 0 0-9-9"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+            />
           </svg>
           <svg
             className={`absolute h-4 w-4 transition-all duration-200 ${isSuccess ? "opacity-100 scale-100" : "opacity-0 scale-50"}`}
             viewBox="0 0 24 24"
             fill="none"
           >
-            <path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d="M5 13l4 4L19 7"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </span>
 
         <span className="transition-opacity duration-150">
-          {isLoading ? "Generating…" : isSuccess ? "Done" : isError ? "Retry" : "Generate Summary"}
+          {isLoading
+            ? "Generating…"
+            : isSuccess
+              ? "Done"
+              : isError
+                ? "Retry"
+                : "Generate Summary"}
         </span>
       </button>
 

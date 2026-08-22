@@ -5,7 +5,8 @@ import { useState, useEffect } from "react";
 
 // this defers loading the entire Three.js/R3F bundle until this component
 // actually renders — not bundled into the initial page load at all.
-const ActivityOrb = dynamic(() => import("../../components/ActivityOrb"), {  ssr: false,
+const ActivityOrb = dynamic(() => import("../../components/ActivityOrb"), {
+  ssr: false,
   loading: () => (
     <div className="h-64 w-full rounded-lg border border-zinc-800 bg-zinc-950 flex items-center justify-center">
       <p className="text-zinc-500 text-sm">Loading 3D scene…</p>
@@ -34,7 +35,7 @@ export default function OrbDemoPage() {
 
       {prefersReducedMotion ? (
         <div className="h-64 w-full max-w-md rounded-lg border border-zinc-800 bg-zinc-950 flex items-center justify-center">
-          <div className="h-24 w-24 rounded-full bg-violet-500" />
+          <div className="h-24 w-24 rounded-full bg-violet-600" />
         </div>
       ) : (
         <div className="w-full max-w-md">
