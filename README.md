@@ -96,5 +96,23 @@ second, more visually rich demo, and wire the orb's color/pulse speed
 to a real signal from the capstone (e.g. a developer's actual activity
 score) rather than a manual click.
 
+## Shader Hero
+
+A custom GLSL fragment shader at `/shader-hero-demo` — a layered sine
+wave gradient (violet-500 to zinc-950) that flows over time and bends
+gently toward the cursor's horizontal position, with the headline
+rendered on top.
+
+**Uniforms used:** `u_time` (drives the wave's continuous motion),
+`u_resolution` (corrects aspect ratio so the wave isn't stretched on
+wide screens), and `u_mouse` (bends the wave toward the cursor).
+
+**Perf/fallback:** `devicePixelRatio` is capped at 1.5 to avoid
+over-rendering on high-DPI screens, the animation pauses via the
+Page Visibility API when the browser tab isn't active, and
+`prefers-reduced-motion` swaps the shader entirely for a static
+gradient using the same two colors — no GPU work at all for users who
+'ve opted out of motion.
+
 ## About This Repo
 This repo documents an AI-assisted development process as part of a frontend engineering internship track. See `CLAUDE.md` for AI assistant conventions used in this project.
