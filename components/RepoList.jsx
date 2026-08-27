@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import RepoCard from "./RepoCard";
 
+// this is to sort out the categories of each repos based on starts, lang, forks, etc.
 export default function RepoList({ repos }) {
   const [sortBy, setSortBy] = useState("stars");
   const [languageFilter, setLanguageFilter] = useState("all");
