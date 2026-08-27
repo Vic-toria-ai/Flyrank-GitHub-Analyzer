@@ -14,11 +14,9 @@ export default async function ProfilePage({ params }) {
   ]);
   return (
     <div className="mx-auto max-w-3xl space-y-4 p-4">
-      <h1>{user.name}</h1>
-      <p>{user.bio}</p>
+      <ProfileHeader user={user} />
       {/* It passes the user and repository information to the AiSummaryCard component to display the summary in a card format. */}
       <AiSummaryCard username={username} repos={repos} />
-      <ProfileHeader user={user} />
       <LanguageChart repos={repos} />
       <RepoList repos={repos} />
     </div>
