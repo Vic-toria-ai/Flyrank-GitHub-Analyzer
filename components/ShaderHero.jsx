@@ -123,19 +123,19 @@ export default function ShaderHero() {
   return (
     <div
       onPointerMove={handlePointerMove}
-      className="relative h-72 w-full overflow-hidden rounded-lg border border-zinc-800"
+      className="relative h-full w-full overflow-hidden"
     >
       <Canvas dpr={dpr} orthographic camera={{ zoom: 1, position: [0, 0, 1] }}>
         <WavePlane mouse={mouse} />
       </Canvas>
-      <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+      {/* <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
         <h1 className="text-2xl font-bold text-white drop-shadow-lg">
           GitHub Analyzer
         </h1>
         <p className="text-sm text-zinc-200 drop-shadow-lg mt-1">
           Understand any developer's activity at a glance.
         </p>
-      </div>
+      </div> */}
     </div>
   );
 }
