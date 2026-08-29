@@ -1,118 +1,102 @@
-# Flyrank Capstone
+# GitHub Analyzer
 
-Frontend capstone project for the FlyRank AI Fluency internship. Built using an AI-assisted development workflow with Claude Code.
+A Next.js app that turns a GitHub username into a readable picture of
+that developer — profile info, language breakdown, a filterable repo
+list, and an AI-generated narrative summary with a computed activity
+score. Two profiles can be compared side by side.
 
-## Status
-🚧 Early setup phase — tech stack and project scope are still being finalized.
+**Live URL:** https://flyrank-git-hub-analyzer.vercel.app
 
-## Stack (planned)
-- React + Vite
-- More TBD as the project scope is confirmed
+## Screenshots
+![Home Page](image.png)
+![Compare Page-empty](image-1.png)
+![Profile Page](image-2.png)
+
+## Features
+
+- **Profile lookup** — search a GitHub username, see their avatar, bio, followers, and public repo count
+- **Repo list** — sortable (stars, forks, last updated) and filterable by language
+- **Language breakdown chart** — proportional bars showing a developer's primary languages
+- **AI-generated summary** — a 2-3 sentence narrative plus strengths/gaps, generated from real repo data and a deterministic activity score computed by a server-side tool (not guessed by the model)
+- **Comparison mode** — two profiles side by side, reusing the same components as the single-profile view
+- **Optional GitHub token** — raises the API rate limit from 60/hour to 5,000/hour, saved locally in the browser
+- **3D and shader demos** — a Three.js scene (`/3d-orb-demo`) and a custom GLSL shader hero (`/shader-hero-demo`), built as part of the program's frontend fundamentals track
 
 ## Getting Started
+
 ```bash
-git clone https://github.com/Vic-toria-ai/Flyrank-Capstone.git
-cd Flyrank-Capstone
+git clone https://github.com/Vic-toria-ai/Flyrank-GitHub-Analyzer.git
+cd Flyrank-GitHub-Analyzer
+git checkout capstone-skeleton
 npm install
 ```
-## AI Tools
 
-### `scoreProfile`
+Create a `.env` file in the project root (see the Environment Variables table below), then:
 
-A server-side tool called by the AI during profile analysis. It calculates a
-deterministic activity/consistency score from a user's repository data,
-rather than letting the model guess at a number — the AI's job is only to
-call it and narrate around the result.
-
-**Input schema:**
-```json
-{
-  "repos": [
-    {
-      "name": "string",
-      "language": "string | null",
-      "stars": "number",
-      "forks": "number",
-      "updated_at": "string",
-      "description": "string | null"
-    }
-  ]
-}
+```bash
+npm run dev
 ```
 
-**Output schema:**
-```json
-{
-  "score": "number (0-100)",
-  "reasoning": "string"
-}
+Visit `http://localhost:3000`.
+
+To run the test suite:
+
+```bash
+npm test              # component tests (Vitest)
+npx playwright test --project=chromium   # end-to-end test
 ```
+## Environment Variables
 
-**Where it's defined:** `app/api/analyze/route.js`
+| Variable | Required | Description |
+|---|---|---|
+| `GITHUB_TOKEN` | Optional | A GitHub Personal Access Token (classic, `public_repo` scope) used server-side to raise the GitHub API rate limit from 60/hour to 5,000/hour. Without it, the app still works, just with the lower unauthenticated limit. |
+| `OPENROUTER_API_KEY` | Required | API key for [OpenRouter](https://openrouter.ai), used to call the AI model that powers the profile summary. Sign up for a free account and generate a key at openrouter.ai/keys. |
 
-**How it's rendered:** `components/AiSummaryCard.jsx` renders each of the
-tool's four lifecycle states distinctly:
-- `input-streaming` — a pulsing indicator while the AI decides what to send
-- `input-available` — a spinner showing the repo count being scored
-- `output-available` — a score card with the numeric result and reasoning
-- `output-error` — a red error state if the tool call fails
+Copy `.env.example` to `.env` and fill in your own values. Neither
+variable is exposed to the browser — both are only read inside server
+routes (`app/api/analyze/route.js`, `lib/github.js`).
 
-## Buttons with a Brain — Motion Notes
+## Architecture
+app/
+page.js → home page (shader hero + username search)
+profile/[username]/page.js → single profile view (Server Component,
+fetches GitHub data before rendering)
+compare/page.js → side-by-side comparison, reuses the same
+components as the profile page
+api/analyze/route.js → server route: calls the AI model with a
+server-side tool (scoreProfile), streams
+the response back
+health/page.js → required health-check endpoint
+buttons-demo/, 3d-orb-demo/, shader-hero-demo/ → standalone demos built
+as part of the program's frontend track
+components/
+ProfileHeader, RepoList, RepoCard, LanguageChart → profile display
+AiSummaryCard → the AI chat/tool-call UI, built on useChat
+TokenWidget, SiteHeader → the optional PAT input, lives in the nav
+GenerateButton, ShaderHero → assignment-specific demo components
+lib/
+github.js → GitHub API calls (getUser, getRepos)
+rateLimit.js → simple in-memory rate limiter for the AI route
 
-The Generate button at `/buttons-demo` (and reused conceptually in
-`AiSummaryCard`) animates only `transform` and `opacity` to stay
-compositor-friendly and avoid layout thrash. State color/scale
-transitions use 200ms with `ease-out`, fast enough to feel responsive
-but slow enough to register as motion rather than a snap. The success
-checkmark fades in while scaling up from 50%, reading as a deliberate
-"arrival" rather than a flat swap. The error shake runs once over 320ms
-and is skipped entirely under `prefers-reduced-motion`, while the color
-change and "Retry" label still provide full feedback without motion.
-The button auto-returns to idle after 1.8s, long enough to read the
-result but not so long it feels stuck.
 
-## 3D Activity Orb
+**Why the AI call happens server-side:** GitHub's public API needs no
+secret key, so `lib/github.js` is called directly from Client
+Components. An AI provider's API key is a real secret — calling it
+directly from the browser would expose it in the Network tab. Instead,
+`AiSummaryCard` (client) calls the app's own `/api/analyze` route
+(server), which holds the key and calls OpenRouter on the client's
+behalf.
 
-A small interactive Three.js/React Three Fiber scene at `/3d-orb-demo`,
-built from primitive geometry (no external 3D model files, so nothing
-to compress or lazy-load beyond the library code itself). Click the
-orb to cycle through four colors, hover to see it scale up and switch
-to wireframe, or drag anywhere on the canvas to orbit the camera.
+**Why one AI call, not several:** the single `/api/analyze` call
+handles both the narrative summary and the `scoreProfile` tool call in
+one pass. Comparison mode reuses this same function twice (once per
+username) rather than building a separate comparison-specific AI
+pipeline — this keeps the AI surface area small and easy to reason
+about, at the cost of comparison-specific insights (e.g. "A ships more
+often than B") not being a first-class feature.
 
-**Loading:** the entire Three.js/R3F bundle is dynamically imported via
-`next/dynamic` with `ssr: false`, so it's only fetched when this page
-is actually visited, not bundled into the app's main load. Measured
-Largest Contentful Paint on this page was 0.51s (Chrome DevTools,
-flagged "good"), and the rotation renders smoothly with no visible
-frame drops.
-
-**Fallback:** if the browser reports `prefers-reduced-motion`, the
-canvas is skipped entirely in favor of a static colored circle, so
-motion-sensitive users still see something meaningful without any
-animation.
-
-**With more time:** I'd add a real GLB model (DRACO-compressed) as a
-second, more visually rich demo, and wire the orb's color/pulse speed
-to a real signal from the capstone (e.g. a developer's actual activity
-score) rather than a manual click.
-
-## Shader Hero
-
-A custom GLSL fragment shader at `/shader-hero-demo` — a layered sine
-wave gradient (violet-500 to zinc-950) that flows over time and bends
-gently toward the cursor's horizontal position, with the headline
-rendered on top.
-
-**Uniforms used:** `u_time` (drives the wave's continuous motion),
-`u_resolution` (corrects aspect ratio so the wave isn't stretched on
-wide screens), and `u_mouse` (bends the wave toward the cursor).
-
-**Perf/fallback:** `devicePixelRatio` is capped at 1.5 to avoid
-over-rendering on high-DPI screens, the animation pauses via the
-Page Visibility API when the browser tab isn't active, and
-`prefers-reduced-motion` swaps the shader entirely for a static
-gradient using the same two colors — no GPU work at all for users who
-'ve opted out of motion.
-
-## About This Repo
-This repo documents an AI-assisted development process as part of a frontend engineering internship track. See `CLAUDE.md` for AI assistant conventions used in this project.
+**Production hygiene:** `/api/analyze` is rate-limited to 5 requests
+per minute per IP address (in-memory, resets on server restart — see
+`lib/rateLimit.js`) so a stranger with the public URL can't drain the
+OpenRouter API credits. The route also sets `maxDuration = 30` so a
+stuck streaming request can't run indefinitely.
