@@ -12,6 +12,8 @@ score. Two profiles can be compared side by side.
 ![Home Page](image.png)
 ![Compare Page-empty](image-1.png)
 ![Profile Page](image-2.png)
+![accessibility](accessibility-after-1.jpeg)
+![performance](performance-after-1.jpeg)
 
 ## Features
 
