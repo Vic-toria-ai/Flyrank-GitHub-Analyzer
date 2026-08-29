@@ -1,4 +1,5 @@
 import { streamText, convertToModelMessages } from "ai";
+import { checkRateLimit } from "../../../lib/rateLimit";
 import { z } from "zod";
 import { tool } from "ai";
 import { stepCountIs } from "ai";
@@ -55,11 +56,27 @@ const scoreProfile = tool({
   },
 });
 
+// this route also caps how long it's allowed to run — protects against a
+// hung/stuck streaming request eating server resources indefinitely.
+export const maxDuration = 30;
+
 // the POST function handles incoming requests to analyze a GitHub developer's activity. It expects a JSON payload containing the chat messages (which include the developer's username and repo data as text). The function passes the tools and messages to streamText, which lets the AI decide when to call scoreProfile, and streams back a response that includes both text and tool-call events.
 export async function POST(request) {
-  const { messages } = await request.json();
+  // identify the caller by IP address, since we don't have user accounts,
+  // and reject the request early (before ever calling the paid AI provider)
+  // if they've made too many requests recently.
+  const ip = request.headers.get("x-forwarded-for") || "unknown";
+  const { allowed, retryAfter } = checkRateLimit(ip);
 
+  if (!allowed) {
+    return new Response(
+      JSON.stringify({ error: `Too many requests. Try again in ${retryAfter}s.` }),
+      { status: 429, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
+  const body = await request.json();
+  const messages = body.messages;
 
   const result = streamText({
     model: openrouter("nvidia/nemotron-3.5-lightning:free"),
