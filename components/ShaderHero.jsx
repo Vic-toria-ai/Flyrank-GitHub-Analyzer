@@ -6,7 +6,7 @@ import { shaderMaterial } from "@react-three/drei";
 import * as THREE from "three";
 
 // the vertex shader just passes each pixel's screen position (uv) through
-// unchanged — all the actual visual work happens in the fragment shader below
+// unchanged, all the actual visual work happens in the fragment shader below:
 const vertexShader = `
   varying vec2 vUv;
   void main() {
